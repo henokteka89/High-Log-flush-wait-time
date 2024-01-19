@@ -4,7 +4,8 @@ High flush wait times in a production database can be indicative of disk I/O con
 Use the following query to identify the top waits in the database:
  
 SELECT * FROM sys.dm_os_wait_stats ORDER BY wait_time_ms DESC;
-Look for waits related to I/O, particularly those associated with flushing.
+
+Look for waits related to I/O, particularly those associated with flushing. Look for wait types related to I/O, such as PAGEIOLATCH_* or WRITELOG. Identify the specific queries contributing to these waits.
 
 2. Check Disk Latency:
 Use the following query to check disk latency for each database file:
@@ -51,3 +52,38 @@ Continue to iterate and refine based on monitoring data.
 11. Communication:
 Keep stakeholders informed about the steps taken, progress made, and potential downtime for implementing changes.
 By systematically addressing these steps, you can identify and resolve the root causes of high flush wait times, ensuring optimal performance for your production database.
+
+Identify Problematic Queries:
+
+Use SQL Server Profiler or Extended Events to capture queries with high disk I/O. Focus on queries that perform frequent writes or large data modifications.
+Analyze execution plans for these queries to identify inefficient operations, missing indexes, or other performance bottlenecks.
+
+Optimize Queries:
+
+Optimize the identified problematic queries. This may involve:
+Adding missing indexes.
+Rewriting queries to reduce unnecessary I/O.
+Partitioning large tables to distribute I/O load.
+
+
+Check Transaction Log Configuration:
+
+Ensure that the transaction log is not on the same physical disk as the data files.
+Check if the transaction log has sufficient space and is not set to autogrow frequently, causing contention.
+Check Disk Health:
+
+Use operating system tools to check the health of the disks where the database files are stored. Look for issues such as disk fragmentation or hardware problems.
+Review Disk Configuration:
+
+Ensure that the database files are distributed across multiple disks or disk arrays to balance I/O load.
+Consider using faster disk types (e.g., SSDs) for high-write databases.
+Monitor and Tune:
+
+Continuously monitor performance using tools like SQL Server Management Studio, PerfMon, or third-party monitoring solutions.
+Adjust configurations based on ongoing performance analysis.
+Implement Regular Maintenance:
+
+Implement regular database maintenance tasks, such as index maintenance and statistics updates, to keep the database optimized.
+Consider Database Design Changes:
+
+If the issue persists, evaluate the database design. It might be necessary to make structural changes to tables or indexes for better performance.
